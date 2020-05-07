@@ -17,6 +17,7 @@ import pathlib
 # load all data
 folder_path_set = list(pathlib.Path(DLSet.AppSet_link).iterdir())
 images = []
+images_vc = []
 labels = []
 
 
@@ -36,8 +37,9 @@ for folder_path in folder_path_set:
         img = cv2.imread(str(img_path))
         draw = dp.detect(img)
         draw = cv2.resize(draw, (150, 150))
-                
-        images.append(rp.get_vec(draw))
+           
+        images.append(cv2.resize(img, (200, 200)))
+        images_vc.append(rp.get_vec(draw))
         labels.append(label)
 
 print('load all data <<<<<<<<<<<<<<<<<<<<<-----------')
@@ -80,8 +82,8 @@ while True:
             vc = rp.get_vec(crop)
             idx = 0
             min_d = 1000
-            for i in range(len(images)):
-                d = rp.get_distance(images[i], vc, True)
+            for i in range(len(images_vc)):
+                d = rp.get_distance(images_vc[i], vc, True)
                 print('label:%s, d=%lf'%(labels[i], d))
                 if min_d > d:
                     min_d = d
@@ -89,8 +91,11 @@ while True:
                     
             cv2.putText(draw,
                     labels[idx],
-                    (int(best_rectangle[0]) + 25, int(best_rectangle[3]) + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
+                    (int(best_rectangle[0]) + 25, int(best_rectangle[1]) - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
                     (0, 0, 255), 2)
+                    
+                    
+            draw[-200:, -200:] = images[idx]
             
     cv2.imshow('frame', draw)
     
